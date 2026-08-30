@@ -1,0 +1,496 @@
+
+
+    <!-- TOP MISSION CONTROL NAVBAR -->
+    <header class="h-14 bg-slate-950/90 border-b border-cyan-500/20 px-4 flex items-center justify-between z-30 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <i class="fas fa-satellite text-cyan-400 text-sm"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-sm font-black tracking-wider text-slate-100 flex items-center gap-1.5">
+                        ORBIT<span class="text-cyan-400">GUARD</span>
+                    </h1>
+                    <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono border border-cyan-500/40">SGP4/J2 PROPAGATOR</span>
+                </div>
+                <div class="text-[10px] text-slate-400 font-mono">PS-04 SATELLITE CONJUNCTION & COLLISION RISK DASHBOARD</div>
+            </div>
+        </div>
+
+        <!-- Telemetry Summary Badges -->
+        <div class="hidden lg:flex items-center gap-3 font-mono text-xs">
+            <div class="px-3 py-1 rounded bg-slate-900/80 border border-slate-800 flex items-center gap-2">
+                <span class="text-slate-400">TRACKED:</span>
+                <span class="font-bold text-cyan-400" id="stat-total-count">35</span>
+            </div>
+            <div class="px-3 py-1 rounded bg-red-950/40 border border-red-500/40 flex items-center gap-2">
+                <span class="text-red-400">CRITICAL:</span>
+                <span class="font-bold text-red-400 glow-red" id="stat-critical-count">0</span>
+            </div>
+            <div class="px-3 py-1 rounded bg-amber-950/40 border border-amber-500/40 flex items-center gap-2">
+                <span class="text-amber-400">HIGH RISK:</span>
+                <span class="font-bold text-amber-400" id="stat-high-count">0</span>
+            </div>
+            <div class="px-3 py-1 rounded bg-slate-900/80 border border-slate-800 flex items-center gap-2">
+                <span class="text-slate-400">CLOCK:</span>
+                <span class="font-bold text-emerald-400" id="sim-clock-display">--- UTC</span>
+            </div>
+            <div id="celestrak-status-pill" class="px-2.5 py-1 rounded bg-emerald-950/40 border border-emerald-500/40 flex items-center gap-1.5 font-mono text-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" id="celestrak-status-dot"></span>
+                <span id="celestrak-status-text" class="text-emerald-300 font-semibold">CELESTRAK LIVE</span>
+            </div>
+        </div>
+
+        <!-- Action Tools -->
+        <div class="flex items-center gap-2">
+            <button id="btn-sync-celestrak" class="px-3 py-1.5 rounded bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm" title="Sync real-time TLE data from CelesTrak Open API">
+                <i class="fas fa-satellite-dish" id="sync-icon"></i> <span class="hidden sm:inline">Sync CelesTrak</span>
+            </button>
+            <button id="btn-toggle-theme" onclick="window.orbitApp && window.orbitApp.toggleTheme()" class="p-2 rounded bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-blue-500 dark:hover:border-cyan-500 text-slate-600 dark:text-slate-300 transition-colors text-xs" title="Toggle Light/Dark Mode">
+                <i id="theme-icon" class="fas fa-moon"></i>
+            </button>
+            <button id="btn-toggle-sound" class="p-2 rounded bg-slate-900 border border-slate-800 hover:border-cyan-500 text-slate-300 transition-colors text-xs" title="Toggle Audio Alarms">
+                <i id="sound-icon" class="fas fa-volume-up text-cyan-400"></i>
+            </button>
+            <button id="btn-import-tle-modal" class="px-3 py-1.5 rounded bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/40 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 transition-all">
+                <i class="fas fa-file-import"></i> <span class="hidden sm:inline">Import TLE</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- CRITICAL CONJUNCTION BANNER (Dynamic Alert) -->
+    <div id="top-critical-alert" class="hidden bg-red-950/90 border-b border-red-500 px-4 py-1.5 flex items-center justify-between text-xs text-red-200 z-20 shrink-0">
+        <div class="flex items-center gap-2 font-bold">
+            <i class="fas fa-radiation text-red-400 animate-spin"></i>
+            <span id="top-alert-msg">DEMO CONJUNCTION SCREENING RISK DETECTED</span>
+        </div>
+        <button onclick="window.orbitApp.switchTab('conjunctions')" class="px-2.5 py-0.5 rounded bg-red-500 hover:bg-red-400 text-slate-950 font-bold text-[10px] transition-colors">
+            VIEW CONJUNCTION MATRIX
+        </button>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT (3-COLUMN LAYOUT) -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- LEFT SIDEBAR: SATELLITE & DEBRIS CATALOG (Floating Collapsible Drawer) -->
+        <aside id="sidebar-catalog" class="w-72 bg-slate-950/85 backdrop-blur-md border-r border-cyan-500/20 flex flex-col z-20 shrink-0 shadow-2xl transition-transform duration-300 relative drawer-closed">
+            <!-- Compact Edge Handle / Toggle Button attached to right edge of drawer -->
+            <button id="btn-toggle-drawer" class="absolute -right-8 top-12 z-30 w-8 h-12 bg-slate-900/90 hover:bg-slate-800 border border-l-0 border-cyan-500/30 rounded-r-lg flex items-center justify-center text-cyan-400 hover:text-cyan-200 transition-all cursor-pointer shadow-lg shadow-black/50" title="Toggle Orbital Catalog">
+                <i id="drawer-toggle-icon" class="fas fa-chevron-left text-xs transition-transform duration-300"></i>
+            </button>
+
+            <!-- Sidebar Header -->
+            <div class="p-3 border-b border-slate-800 flex items-center justify-between z-10 bg-slate-950/90 shrink-0">
+                <span class="text-xs font-bold text-slate-200 tracking-wider flex items-center gap-1.5">
+                    <i class="fas fa-layer-group text-cyan-400"></i> ORBITAL CATALOG
+                </span>
+                <span class="text-[10px] text-slate-500 font-mono">35 OBJECTS</span>
+            </div>
+
+            <!-- Search & Filters Container -->
+            <div class="p-3 border-b border-slate-800 space-y-2 shrink-0">
+                <!-- Search bar -->
+                <div class="relative">
+                    <i class="fas fa-search absolute left-2.5 top-2.5 text-slate-500 text-xs"></i>
+                    <input type="text" id="search-objects" placeholder="Search name, NORAD, country..." 
+                           class="w-full pl-8 pr-2 py-1.5 rounded bg-slate-900/90 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <!-- Category Select Filter -->
+                <select id="category-filter" class="w-full px-2 py-1.5 rounded bg-slate-900/90 border border-slate-800 text-xs text-slate-300 focus:outline-none focus:border-cyan-500">
+                    <option value="ALL">All Categories (35)</option>
+                    <option value="STATION">Space Stations (2)</option>
+                    <option value="PAYLOAD">Active Science & EO (8)</option>
+                    <option value="STARLINK">Starlink Constellation (5)</option>
+                    <option value="DEBRIS">Collision / ASAT Debris (8)</option>
+                    <option value="ROCKET_BODY">Derelict Rocket Bodies (5)</option>
+                    <option value="DEFUNCT">Defunct Satellites (2)</option>
+                </select>
+            </div>
+
+            <!-- Object Cards Scrollable List -->
+            <div id="object-list-container" class="flex-1 overflow-y-auto p-2 space-y-1.5">
+                <!-- Populated via app.js -->
+            </div>
+        </aside>
+
+        <!-- CENTER VIEWPORT & TAB DECK -->
+        <main class="flex-1 flex flex-col overflow-hidden bg-slate-950 relative">
+            <!-- View Mode Tabs Bar -->
+            <div class="h-10 bg-slate-950 border-b border-cyan-500/20 px-4 relative flex items-center justify-center z-10 shrink-0">
+                <!-- Center Tabs -->
+                <div class="flex items-center gap-1 font-mono text-xs overflow-x-auto pr-32 w-full no-scrollbar">
+                    <button class="tab-btn active px-3 py-1.5 rounded-t text-slate-300 hover:text-cyan-300 transition-all font-semibold flex items-center gap-1.5 whitespace-nowrap" data-tab="3d">
+                        <i class="fas fa-globe-americas"></i> 3D Globe
+                    </button>
+                    <button class="tab-btn px-3 py-1.5 rounded-t text-slate-300 hover:text-cyan-300 transition-all font-semibold flex items-center gap-1.5 whitespace-nowrap" data-tab="2d">
+                        <i class="fas fa-map"></i> 2D Ground Track
+                    </button>
+                    <button class="tab-btn px-3 py-1.5 rounded-t text-slate-300 hover:text-cyan-300 transition-all font-semibold flex items-center gap-1.5 whitespace-nowrap" data-tab="conjunctions">
+                        <i class="fas fa-exclamation-triangle"></i> Conjunction Matrix
+                    </button>
+                    
+                    
+                </div>
+
+                <div id="globe-camera-controls" class="absolute right-4 hidden sm:flex items-center gap-1 text-xs bg-slate-950/80 p-1 rounded-lg backdrop-blur-sm">
+                    <button id="cam-free" class="px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded border border-cyan-500/50 text-[10px] font-semibold transition-all">Free</button>
+                    <button id="cam-focus" class="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 text-[10px] transition-all">Focus</button>
+                    <button id="cam-follow" class="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 text-[10px] transition-all">Follow</button>
+                    <button id="cam-reset" class="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 text-[10px] transition-all" title="Reset View"><i class="fas fa-compress-arrows-alt"></i></button>
+                </div>
+            </div>
+
+            <!-- TAB 1: 3D Globe Container -->
+            <div id="view-3d" class="flex-1 w-full h-full relative">
+                <div id="globe-container"></div>
+                <!-- 3D Overlay Compass / Legend -->
+                <div class="absolute bottom-4 left-4 p-3 rounded-lg glass-panel text-[10px] space-y-1 z-10 pointer-events-none font-mono">
+                    <div class="font-bold text-slate-200 uppercase tracking-wider mb-1.5 text-[11px]"><i class="fas fa-circle-notch text-cyan-400"></i> Orbit Classification</div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#00ff99]"></span> <span>Space Stations (ISS / CSS)</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#00f0ff]"></span> <span>Active Science & Earth Obs</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#38bdf8]"></span> <span>Starlink Constellation</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#ffaa00]"></span> <span>Derelict Rocket Bodies</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#ff2a55]"></span> <span>Collision & ASAT Debris</span></div>
+                </div>
+            </div>
+
+            <!-- TAB 2: 2D Ground Track View -->
+            <div id="view-2d" class="flex-1 w-full h-full relative hidden">
+                <canvas id="ground-track-canvas" class="w-full h-full"></canvas>
+            </div>
+
+            <!-- TAB 3: Conjunction Matrix Table -->
+            <div id="view-conjunctions" class="flex-1 p-4 overflow-y-auto hidden">
+                <div class="max-w-6xl mx-auto space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                                <i class="fas fa-crosshairs text-cyan-400"></i> Automated Conjunction Assessment Matrix
+                            </h2>
+                            <p class="text-xs text-slate-400">Pairwise close-approach predictions across 48-hour orbital propagation horizon.</p>
+                        </div>
+                        <button onclick="window.orbitApp.scanAllConjunctions()" class="px-3 py-1.5 rounded bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-600/30">
+                            <i class="fas fa-sync-alt"></i> Re-Scan 48h
+                        </button>
+                    </div>
+
+                    <div class="glass-panel rounded-xl overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-900/90 text-[10px] font-mono text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="py-2.5 px-3">#</th>
+                                    <th class="py-2.5 px-3">PRIMARY ASSET</th>
+                                    <th class="py-2.5 px-3">SECONDARY TARGET</th>
+                                    <th class="py-2.5 px-3">MISS DISTANCE</th>
+                                    <th class="py-2.5 px-3">TIME TO TCA</th>
+                                    <th class="py-2.5 px-3">REL VELOCITY</th>
+                                    <th class="py-2.5 px-3">PROBABILITY (Pc)</th>
+                                    <th class="py-2.5 px-3">SEVERITY</th>
+                                    <th class="py-2.5 px-3 text-right">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="conjunction-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+
+            </main>
+
+        <!-- RIGHT SIDEBAR: CONJUNCTION FEED & TELEMETRY HUD (Floating Collapsible Drawer) -->
+        <aside id="sidebar-conjunctions" class="w-80 bg-slate-950/85 backdrop-blur-md border-l border-cyan-500/20 flex flex-col z-20 shrink-0 shadow-2xl transition-transform duration-300 relative drawer-closed">
+            <!-- Compact Edge Handle / Toggle Button attached to left edge of right drawer -->
+            <button id="btn-toggle-right-drawer" class="absolute -left-8 top-12 z-30 w-8 h-12 bg-slate-900/90 hover:bg-slate-800 border border-r-0 border-cyan-500/30 rounded-l-lg flex items-center justify-center text-cyan-400 hover:text-cyan-200 transition-all cursor-pointer shadow-lg shadow-black/50" title="Toggle Conjunction Alerts & Telemetry">
+                <i id="right-drawer-toggle-icon" class="fas fa-chevron-right text-xs transition-transform duration-300"></i>
+            </button>
+
+            <!-- Top Section: Upcoming Conjunction Alert Feed -->
+            <div class="p-3 border-b border-slate-800 flex items-center justify-between z-10 bg-slate-950/90 shrink-0">
+                <span class="text-xs font-bold text-slate-200 tracking-wider flex items-center gap-1.5">
+                    <i class="fas fa-bell text-red-400"></i> CONJUNCTION ALERTS
+                </span>
+                <span class="text-[10px] px-1.5 py-0.5 rounded bg-red-950 text-red-400 border border-red-500/40 font-mono">LIVE FEED</span>
+            </div>
+            <div class="px-3 py-2 border-b border-slate-800 bg-slate-950/70 text-[10px] leading-relaxed text-slate-400 font-mono">
+                Demo screening output from bundled TLEs. TCA countdowns follow the simulation clock and are not real-world collision alerts.
+            </div>
+
+            <div id="collision-verdict-card" class="m-2 p-3 rounded-lg border border-cyan-500/30 bg-cyan-950/20 font-mono text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-cyan-300 font-bold flex items-center gap-1.5">
+                        <i class="fas fa-shield-alt"></i> COLLISION VERDICT
+                    </span>
+                    <span id="collision-verdict-status" class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 text-[10px] font-bold">SCREENING</span>
+                </div>
+                <div id="collision-verdict-main" class="text-slate-100 font-bold leading-snug">
+                    No confirmed collision. Waiting for conjunction scan...
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-[10px]">
+                    <div class="bg-slate-950/70 rounded p-2 border border-slate-800">
+                        <span class="block text-slate-500">Nearest TCA</span>
+                        <span id="collision-verdict-tca" class="text-cyan-300 font-bold">---</span>
+                    </div>
+                    <div class="bg-slate-950/70 rounded p-2 border border-slate-800">
+                        <span class="block text-slate-500">Predicted Miss</span>
+                        <span id="collision-verdict-miss" class="text-amber-300 font-bold">---</span>
+                    </div>
+                </div>
+                <div id="collision-verdict-note" class="text-[10px] leading-relaxed text-slate-400">
+                    TLE-only demo data can identify close approaches, but cannot confirm impact without operational covariance data.
+                </div>
+            </div>
+            
+            <div id="conjunction-alert-feed" class="p-2 overflow-y-auto max-h-56 space-y-2 border-b border-slate-800/80" style="display: none;">
+                <!-- Conjunction alerts inserted here -->
+            </div>
+
+            <!-- Bottom Section: Selected Asset Telemetry HUD -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-200 tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-tachometer-alt text-cyan-400"></i> ASSET TELEMETRY
+                    </span>
+                    <span id="hud-norad" class="text-[10px] font-mono text-cyan-300 bg-cyan-950 px-1.5 py-0.5 rounded">---</span>
+                </div>
+
+                <div class="glass-panel p-3 rounded-lg space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div id="hud-sat-name" class="font-bold text-sm text-slate-100 truncate">SELECT ASSET</div>
+                    </div>
+                    <div id="hud-sat-type" class="text-[10px] text-cyan-400 font-semibold uppercase">---</div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+                        <div class="bg-slate-900/90 p-2 rounded border border-slate-800">
+                            <span class="text-slate-500 text-[10px] block">ALTITUDE</span>
+                            <span id="hud-alt" class="font-bold text-slate-200">--- km</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded border border-slate-800">
+                            <span class="text-slate-500 text-[10px] block">SPEED</span>
+                            <span id="hud-speed" class="font-bold text-cyan-300">--- km/s</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded border border-slate-800">
+                            <span class="text-slate-500 text-[10px] block">INCLINATION</span>
+                            <span id="hud-inc" class="font-bold text-slate-200">---°</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded border border-slate-800">
+                            <span class="text-slate-500 text-[10px] block">PERIOD</span>
+                            <span id="hud-period" class="font-bold text-slate-200">--- min</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded border border-slate-800">
+                            <span class="text-slate-500 text-[10px] block">RAAN</span>
+                            <span id="hud-raan" class="font-bold text-slate-200">---°</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded border border-slate-800">
+                            <span class="text-slate-500 text-[10px] block">MASS / SPAN</span>
+                            <span id="hud-mass" class="font-bold text-slate-200">---</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-2 rounded border border-slate-800">
+                            <span class="text-slate-500 text-[10px] block">HARD-BODY RADIUS</span>
+                            <span id="hud-radius" class="font-bold text-slate-200">--- m</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-1 text-[10px] font-mono text-slate-400 space-y-1">
+                        <div class="flex justify-between">
+                            <span>Subsatellite Point:</span>
+                            <span id="hud-latlon" class="text-slate-200">---</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Optical Footprint:</span>
+                            <span id="hud-footprint" class="text-cyan-400">--- km</span>
+                        </div>
+                    </div>
+
+                    <p id="hud-desc" class="text-[10px] text-slate-400 pt-1 border-t border-slate-800/80 leading-relaxed">
+                        Select an orbital asset to inspect telemetry.
+                    </p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- BOTTOM CONTROL DECK (TIME WARP & SCRUBBER) -->
+    <footer class="min-h-[4rem] h-auto py-2 md:h-16 bg-slate-950 border-t border-cyan-500/20 px-4 flex flex-wrap md:flex-nowrap items-center justify-between gap-4 z-30 shrink-0 font-mono text-xs overflow-x-auto">
+        <!-- Playback Controls -->
+        <div class="flex items-center gap-1.5">
+            <button id="btn-reset-time" class="p-2 rounded bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300" title="Reset to T+0">
+                <i class="fas fa-undo-alt"></i>
+            </button>
+            <button id="btn-step-back" class="p-2 rounded bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300" title="Step -5 min">
+                <i class="fas fa-backward"></i>
+            </button>
+            <button id="btn-play-pause" class="px-3.5 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold shadow-lg shadow-cyan-500/20" title="Play / Pause">
+                <i class="fas fa-pause"></i>
+            </button>
+            <button id="btn-step-fwd" class="p-2 rounded bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300" title="Step +5 min">
+                <i class="fas fa-forward"></i>
+            </button>
+            <button id="btn-jump-next-tca" class="px-2.5 py-2 rounded bg-red-600/30 hover:bg-red-600/60 border border-red-500/40 text-red-300 text-xs font-bold" title="Jump to Next Critical TCA">
+                <i class="fas fa-radiation mr-1"></i> Jump Next TCA
+            </button>
+        </div>
+
+        <!-- Timeline Scrubber -->
+        <div class="flex-1 flex flex-col gap-1 max-w-3xl">
+            <div class="flex items-center justify-between text-[10px] text-slate-400">
+                <span id="sim-elapsed-display" class="text-cyan-300 font-bold">SIM T+00h 00m 00s</span>
+                <span class="text-slate-500">48h analysis horizon · TCA countdowns update from this scale</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] text-slate-500">T+0h</span>
+                <input type="range" id="timeline-slider" min="0" max="172800" step="1" value="0" class="flex-1">
+                <span class="text-[10px] text-slate-500">T+48h</span>
+            </div>
+        </div>
+
+        <!-- Speed Multipliers -->
+        <div class="flex items-center gap-1">
+            <button class="speed-btn px-2 py-1 rounded bg-cyan-500 text-black font-bold active" data-speed="1">1x</button>
+            <button class="speed-btn px-2 py-1 rounded bg-slate-900 text-slate-300 hover:text-cyan-300" data-speed="10">10x</button>
+            <button class="speed-btn px-2 py-1 rounded bg-slate-900 text-slate-300 hover:text-cyan-300" data-speed="60">60x</button>
+            <button class="speed-btn px-2 py-1 rounded bg-slate-900 text-slate-300 hover:text-cyan-300" data-speed="300">300x</button>
+            <button class="speed-btn px-2 py-1 rounded bg-slate-900 text-slate-300 hover:text-cyan-300" data-speed="1000">1000x</button>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: CONJUNCTION DETAILS & TELEMETRY INSPECTOR -->
+    <div id="conjunction-detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel p-6 rounded-2xl max-w-2xl w-full space-y-4 border-glow-cyan shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                        <i class="fas fa-crosshairs text-cyan-400"></i> <span id="modal-conj-title">CONJUNCTION ENCOUNTER DETAILS</span>
+                    </h3>
+                    <div id="modal-severity-badge" class="mt-1 inline-block px-2 py-0.5 rounded text-[10px] font-bold">---</div>
+                </div>
+                <button onclick="window.orbitApp.closeConjunctionModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+                        </div>
+
+            <!-- PROMINENT TCA DISPLAY -->
+            <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 flex items-center justify-between shadow-inner">
+                <div>
+                    <span class="text-slate-500 text-[10px] font-bold tracking-wider uppercase block mb-1">Expected Collision Time (UTC)</span>
+                    <span id="modal-tca-absolute" class="text-slate-100 font-black text-sm">---</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-slate-500 text-[10px] font-bold tracking-wider uppercase block mb-1">Time to Impact</span>
+                    <span id="modal-tca-relative" class="text-amber-500 font-mono font-black text-xl">---</span>
+                </div>
+            </div>
+
+            <!-- Detailed encounter metrics -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
+                <div class="bg-slate-900/90 p-2.5 rounded border border-slate-800">
+                    <span class="text-slate-500 text-[10px] block">MISS DISTANCE</span>
+                    <span id="modal-miss-dist" class="font-bold text-amber-300">---</span>
+                </div>
+                <div class="bg-slate-900/90 p-2.5 rounded border border-slate-800">
+                    <span class="text-slate-500 text-[10px] block">RELATIVE SPEED</span>
+                    <span id="modal-rel-speed" class="font-bold text-cyan-300">---</span>
+                </div>
+                <div class="bg-slate-900/90 p-2.5 rounded border border-slate-800">
+                    <span class="text-slate-500 text-[10px] block">COLLISION PROB (Pc)</span>
+                    <span id="modal-pc" class="font-bold text-red-400">---</span>
+                </div>
+                <div class="bg-slate-900/90 p-2.5 rounded border border-slate-800">
+                    <span class="text-slate-500 text-[10px] block">IMPACT ENERGY</span>
+                    <span id="modal-kinetic-energy" class="font-bold text-slate-200">---</span>
+                </div>
+            </div>
+
+            <!-- RSW Relative Frame Separation -->
+            <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 space-y-1 text-xs font-mono">
+                <span class="text-cyan-400 font-bold text-[11px] block">Hill / RSW Frame Relative Position at TCA:</span>
+                <div class="grid grid-cols-3 gap-2 text-slate-300 pt-1">
+                    <div>Radial (&Delta;R): <span id="modal-rsw-radial" class="font-bold text-white">---</span></div>
+                    <div>Along-Track (&Delta;T): <span id="modal-rsw-along" class="font-bold text-white">---</span></div>
+                    <div>Cross-Track (&Delta;W): <span id="modal-rsw-cross" class="font-bold text-white">---</span></div>
+                </div>
+            </div>
+
+            <!-- Two objects cards -->
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div id="modal-obj1-details" class="p-3 bg-slate-900/90 rounded-lg border border-slate-800 text-slate-300 font-mono space-y-1">
+                </div>
+                <div id="modal-obj2-details" class="p-3 bg-slate-900/90 rounded-lg border border-slate-800 text-slate-300 font-mono space-y-1">
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex items-center justify-between pt-2">
+                <span class="text-[11px] font-mono text-slate-400" id="modal-tca-time">TCA: ---</span>
+                <div class="flex gap-2">
+                    
+                    
+                    <button onclick="window.orbitApp.closeConjunctionModal()" class="px-4 py-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- MODAL 2: CUSTOM TLE INGESTION -->
+    <div id="import-tle-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel p-6 rounded-2xl max-w-lg w-full space-y-4 border-glow-cyan shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fas fa-file-import text-cyan-400"></i> Ingest Custom TLE Orbital Data
+                </h3>
+                <button onclick="window.orbitApp.closeImportModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="text-slate-400 block mb-1">Object Name / Identifier</label>
+                    <input type="text" id="import-name" placeholder="e.g. CUBESAT-ALPHA" 
+                           class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800 text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="text-slate-400 block mb-1">Object Classification</label>
+                    <select id="import-type" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800 text-slate-200 focus:outline-none focus:border-cyan-500">
+                        <option value="PAYLOAD">Active Payload / Satellite</option>
+                        <option value="STATION">Space Station</option>
+                        <option value="STARLINK">Mega-Constellation</option>
+                        <option value="DEBRIS">Debris Shard</option>
+                        <option value="ROCKET_BODY">Rocket Body Upper Stage</option>
+                        <option value="DEFUNCT">Defunct Satellite</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-slate-400 block mb-1">TLE Line 1 (69 characters)</label>
+                    <input type="text" id="import-tle1" placeholder="1 25544U 98067A   24080.50000000  .00016717  00000-0  10270-3 0  9001" 
+                           class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800 text-slate-200 font-mono text-[11px] focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="text-slate-400 block mb-1">TLE Line 2 (69 characters)</label>
+                    <input type="text" id="import-tle2" placeholder="2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.49815124 10000" 
+                           class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800 text-slate-200 font-mono text-[11px] focus:outline-none focus:border-cyan-500">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+                <button onclick="window.orbitApp.closeImportModal()" class="px-4 py-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">
+                    Cancel
+                </button>
+                <button onclick="window.orbitApp.submitCustomTLE()" class="px-4 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+                    <i class="fas fa-check"></i> Parse & Ingest Object
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+

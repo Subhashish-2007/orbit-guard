@@ -1,0 +1,705 @@
+/* ==========================================================================
+   ORBITGUARD — Design System & Theme Engine
+   Tailwind CSS + CSS Custom Properties
+   ========================================================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Custom Properties ─────────────────────────────────────────────── */
+/* Dark mode (default — html.dark) */
+:root,
+html.dark {
+  --og-bg:           #060b1e;
+  --og-bg-2:         #080f28;
+  --og-surface:      rgba(8, 15, 42, 0.88);
+  --og-surface-2:    rgba(5, 10, 30, 0.95);
+  --og-input:        rgba(4, 8, 24, 0.9);
+  --og-border:       rgba(0, 229, 255, 0.16);
+  --og-border-2:     rgba(0, 229, 255, 0.08);
+  --og-border-solid: rgba(30, 50, 100, 0.6);
+  --og-text:         #e5e7eb;
+  --og-text-2:       #94a3b8;
+  --og-text-3:       #64748b;
+  --og-accent:       #00e5ff;
+  --og-accent-bg:    rgba(0, 229, 255, 0.1);
+  --og-success:      #00ff99;
+  --og-success-bg:   rgba(0, 255, 153, 0.12);
+  --og-warning:      #ffaa00;
+  --og-warning-bg:   rgba(255, 170, 0, 0.12);
+  --og-danger:       #ff2a55;
+  --og-danger-bg:    rgba(255, 42, 85, 0.12);
+  --og-shadow:       0 8px 32px rgba(0, 0, 0, 0.6);
+  --og-transition:   background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode — html:not(.dark) */
+html:not(.dark) {
+  --og-bg:           #e5e7eb;
+  --og-bg-2:         #d1d5db;
+  --og-surface:      rgba(243, 244, 246, 0.98);
+  --og-surface-2:    rgba(243, 244, 246, 1);
+  --og-input:        rgba(243, 244, 246, 1);
+  --og-border:       rgba(15, 23, 42, 0.12);
+  --og-border-2:     rgba(15, 23, 42, 0.06);
+  --og-border-solid: rgba(203, 213, 225, 1);
+  --og-text:         #0f172a;
+  --og-text-2:       #334155;
+  --og-text-3:       #64748b;
+  --og-accent:       #0284c7;
+  --og-accent-bg:    rgba(2, 132, 199, 0.08);
+  --og-success:      #059669;
+  --og-success-bg:   rgba(5, 150, 105, 0.08);
+  --og-warning:      #ea580c;
+  --og-warning-bg:   rgba(234, 88, 12, 0.08);
+  --og-danger:       #e11d48;
+  --og-danger-bg:    rgba(225, 29, 72, 0.08);
+  --og-shadow:       0 4px 15px rgba(15, 23, 42, 0.06);
+  --og-transition:   background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── Base Resets ───────────────────────────────────────────────────────── */
+* {
+  transition: var(--og-transition);
+}
+
+/* Don't animate layout/transform properties */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, opacity, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--og-bg);
+  color: var(--og-text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#root > div {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Structural Layout Overrides ───────────────────────────────────────── */
+
+/* HEADER */
+html:not(.dark) header {
+  background: rgba(243, 244, 246, 0.98) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.15) !important;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+}
+
+html.dark header {
+  background: rgba(6, 11, 30, 0.92) !important;
+  border-bottom-color: rgba(0, 229, 255, 0.18) !important;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* COLLISION VERDICT STRIP */
+html:not(.dark) #top-collision-verdict {
+  background: rgba(243, 244, 246, 0.95) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+html.dark #top-collision-verdict {
+  background: rgba(4, 8, 22, 0.95) !important;
+  border-bottom-color: rgba(0, 229, 255, 0.2) !important;
+}
+
+/* LEFT SIDEBAR */
+html:not(.dark) aside:first-of-type {
+  background: rgba(243, 244, 246, 0.98) !important;
+  border-right-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+html.dark aside:first-of-type {
+  background: rgba(6, 11, 30, 0.75) !important;
+  border-right-color: rgba(0, 229, 255, 0.12) !important;
+}
+
+/* RIGHT SIDEBAR */
+html:not(.dark) aside:last-of-type {
+  background: rgba(243, 244, 246, 0.98) !important;
+  border-left-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+html.dark aside:last-of-type {
+  background: rgba(6, 11, 30, 0.82) !important;
+  border-left-color: rgba(0, 229, 255, 0.12) !important;
+}
+
+/* CENTER MAIN */
+html:not(.dark) main {
+  background: #f1f5f9 !important;
+}
+
+html.dark main {
+  background: #050a18 !important;
+}
+
+/* TAB BAR */
+html:not(.dark) main > div:first-child {
+  background: rgba(243, 244, 246, 0.98) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+/* FOOTER */
+html:not(.dark) footer {
+  background: rgba(243, 244, 246, 0.98) !important;
+  border-top-color: rgba(15, 23, 42, 0.15) !important;
+  box-shadow: 0 -2px 12px rgba(15, 23, 42, 0.05);
+}
+
+html.dark footer {
+  background: rgba(4, 8, 22, 0.95) !important;
+  border-top-color: rgba(0, 229, 255, 0.18) !important;
+}
+
+/* ── Sidebar Inner Text Overrides ──────────────────────────────────────── */
+html:not(.dark) aside .og-section-label {
+  color: #1e3a5f;
+}
+
+html:not(.dark) #object-list-container .og-count {
+  color: #475569;
+}
+
+/* ── Search & Select Inputs ────────────────────────────────────────────── */
+html:not(.dark) input[type="text"],
+html:not(.dark) select {
+  background: rgba(241, 245, 252, 0.98) !important;
+  border-color: rgba(148, 163, 184, 0.5) !important;
+  color: #0f172a !important;
+}
+
+html:not(.dark) input[type="text"]::placeholder {
+  color: #94a3b8;
+}
+
+html:not(.dark) input[type="text"]:focus,
+html:not(.dark) select:focus {
+  border-color: rgba(2, 132, 199, 0.6) !important;
+}
+
+html.dark input[type="text"],
+html.dark select {
+  background: rgba(4, 8, 24, 0.9) !important;
+  border-color: rgba(30, 50, 100, 0.6) !important;
+  color: #e5e7eb !important;
+}
+
+html.dark input[type="text"]:focus,
+html.dark select:focus {
+  border-color: rgba(0, 229, 255, 0.6) !important;
+}
+
+/* ── Custom Scrollbars ─────────────────────────────────────────────────── */
+html.dark ::-webkit-scrollbar-track  { background: #070c1e; }
+html.dark ::-webkit-scrollbar-thumb  { background: #1b2a59; border-radius: 3px; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #00e5ff; }
+
+html:not(.dark) ::-webkit-scrollbar-track  { background: #e8eef8; }
+html:not(.dark) ::-webkit-scrollbar-thumb  { background: #94a3b8; border-radius: 3px; }
+html:not(.dark) ::-webkit-scrollbar-thumb:hover { background: #0284c7; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+
+/* ── Glass Panels ──────────────────────────────────────────────────────── */
+.glass-panel {
+  background: rgba(8, 15, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 229, 255, 0.16);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+html:not(.dark) .glass-panel {
+  background: #ffffff !important;
+  border-color: #e4e4e7 !important;
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1) !important;
+}
+
+.glass-panel-critical {
+  background: rgba(40, 8, 20, 0.9);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 42, 85, 0.5);
+  box-shadow: 0 0 25px rgba(255, 42, 85, 0.22);
+}
+
+html:not(.dark) .glass-panel-critical {
+  background: rgba(255, 240, 242, 0.98) !important;
+  border-color: rgba(220, 38, 38, 0.4) !important;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.1) !important;
+}
+
+.glass-panel-high {
+  background: rgba(38, 22, 8, 0.9);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 170, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.18);
+}
+
+html:not(.dark) .glass-panel-high {
+  background: rgba(255, 251, 235, 0.98) !important;
+  border-color: rgba(217, 119, 6, 0.35) !important;
+  box-shadow: 0 4px 20px rgba(217, 119, 6, 0.08) !important;
+}
+
+/* ── Neon Glows (dark only) ────────────────────────────────────────────── */
+html.dark .glow-cyan  { text-shadow: 0 0 10px rgba(0, 229, 255, 0.7); }
+html.dark .glow-red   { text-shadow: 0 0 12px rgba(255, 42, 85, 0.8); }
+html.dark .glow-amber { text-shadow: 0 0 10px rgba(255, 170, 0, 0.7); }
+html.dark .glow-green { text-shadow: 0 0 10px rgba(0, 255, 153, 0.7); }
+
+html:not(.dark) .glow-cyan  { text-shadow: none; }
+html:not(.dark) .glow-red   { text-shadow: none; }
+html:not(.dark) .glow-amber { text-shadow: none; }
+html:not(.dark) .glow-green { text-shadow: none; }
+
+/* ── Border Glows ──────────────────────────────────────────────────────── */
+html.dark .border-glow-cyan { border-color: #00e5ff; box-shadow: 0 0 15px rgba(0, 229, 255, 0.25); }
+html.dark .border-glow-red  { border-color: #ff2a55; box-shadow: 0 0 18px rgba(255, 42, 85, 0.4); }
+
+html:not(.dark) .border-glow-cyan { border-color: #0284c7; box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15); }
+html:not(.dark) .border-glow-red  { border-color: #dc2626; box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12); }
+
+/* ── Severity Badges ───────────────────────────────────────────────────── */
+html.dark .badge-critical {
+  background: rgba(255, 42, 85, 0.18);
+  color: #ff2a55;
+  border: 1px solid #ff2a55;
+  box-shadow: 0 0 8px rgba(255, 42, 85, 0.35);
+}
+
+html:not(.dark) .badge-critical {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  box-shadow: none;
+}
+
+html.dark .badge-high {
+  background: rgba(255, 170, 0, 0.18);
+  color: #ffaa00;
+  border: 1px solid #ffaa00;
+  box-shadow: 0 0 8px rgba(255, 170, 0, 0.35);
+}
+
+html:not(.dark) .badge-high {
+  background: rgba(217, 119, 6, 0.1);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  box-shadow: none;
+}
+
+html.dark .badge-moderate {
+  background: rgba(0, 229, 255, 0.12);
+  color: #00e5ff;
+  border: 1px solid rgba(0, 229, 255, 0.5);
+}
+
+html:not(.dark) .badge-moderate {
+  background: rgba(2, 132, 199, 0.08);
+  color: #0369a1;
+  border: 1px solid rgba(2, 132, 199, 0.35);
+}
+
+html.dark .badge-low {
+  background: rgba(0, 255, 153, 0.12);
+  color: #00ff99;
+  border: 1px solid rgba(0, 255, 153, 0.5);
+}
+
+html:not(.dark) .badge-low {
+  background: rgba(5, 150, 105, 0.08);
+  color: #047857;
+  border: 1px solid rgba(5, 150, 105, 0.35);
+}
+
+/* ── Radar Sweep Animation ─────────────────────────────────────────────── */
+html.dark .radar-sweep {
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 229, 255, 0.2) 60deg, transparent 60.1deg);
+  animation: radar 3.5s linear infinite;
+}
+
+html:not(.dark) .radar-sweep {
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(2, 132, 199, 0.15) 60deg, transparent 60.1deg);
+  animation: radar 3.5s linear infinite;
+}
+
+@keyframes radar {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Critical Alert Pulse ──────────────────────────────────────────────── */
+@keyframes pulse-red-dark {
+  0%, 100% {
+    background-color: rgba(255, 42, 85, 0.18);
+    border-color: #ff2a55;
+    box-shadow: 0 0 15px rgba(255, 42, 85, 0.3);
+  }
+  50% {
+    background-color: rgba(255, 42, 85, 0.42);
+    border-color: #fff;
+    box-shadow: 0 0 28px rgba(255, 42, 85, 0.6);
+  }
+}
+
+@keyframes pulse-red-light {
+  0%, 100% {
+    background-color: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.5);
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.15);
+  }
+  50% {
+    background-color: rgba(220, 38, 38, 0.15);
+    border-color: #dc2626;
+    box-shadow: 0 0 16px rgba(220, 38, 38, 0.25);
+  }
+}
+
+html.dark .alert-pulse-critical {
+  animation: pulse-red-dark 1.5s infinite ease-in-out;
+}
+
+html:not(.dark) .alert-pulse-critical {
+  animation: pulse-red-light 1.5s infinite ease-in-out;
+}
+
+/* ── Range Sliders ─────────────────────────────────────────────────────── */
+input[type="range"] {
+  -webkit-appearance: none;
+  background: #0f1c3f;
+  border-radius: 4px;
+  height: 6px;
+  outline: none;
+}
+
+html:not(.dark) input[type="range"] {
+  background: #dde8f5 !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+  cursor: pointer;
+}
+
+html:not(.dark) input[type="range"]::-webkit-slider-thumb {
+  background: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2) !important;
+}
+
+/* ── Tab Active State ──────────────────────────────────────────────────── */
+html.dark .tab-btn {
+  color: #94a3b8;
+}
+
+html.dark .tab-btn:hover {
+  color: #00e5ff;
+}
+
+html.dark .tab-btn.active {
+  background: rgba(0, 229, 255, 0.15);
+  color: #00e5ff;
+  border-bottom: 2px solid #00e5ff;
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.18);
+}
+
+html:not(.dark) .tab-btn {
+  color: #475569;
+}
+
+html:not(.dark) .tab-btn:hover {
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.06);
+}
+
+html:not(.dark) .tab-btn.active {
+  background: rgba(2, 132, 199, 0.1) !important;
+  color: #0369a1 !important;
+  border-bottom: 2px solid #0284c7 !important;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+}
+
+/* ── Speed Button ──────────────────────────────────────────────────────── */
+html:not(.dark) .speed-btn {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #d1d5db !important;
+}
+
+html:not(.dark) .speed-btn.active,
+html:not(.dark) .speed-btn.bg-cyan-500 {
+  background: #0284c7 !important;
+  color: #fff !important;
+  border-color: #0284c7 !important;
+}
+
+/* ── Canvas Viewports ──────────────────────────────────────────────────── */
+#globe-container,
+#ground-track-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+canvas { display: block; }
+
+/* ── Object List Cards  ─────────────────────────── */
+html:not(.dark) .og-obj-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
+  color: #0f172a !important;
+}
+
+html:not(.dark) .og-obj-card:hover {
+  border-color: rgba(2, 132, 199, 0.4) !important;
+  background: rgba(239, 246, 255, 0.95) !important;
+}
+
+html:not(.dark) .og-obj-card.og-selected {
+  background: rgba(219, 234, 254, 0.9) !important;
+  border-color: rgba(2, 132, 199, 0.6) !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.1);
+}
+
+html.dark .og-obj-card {
+  background: rgba(8, 15, 40, 0.5) !important;
+  border-color: rgba(30, 50, 100, 0.5) !important;
+}
+
+html.dark .og-obj-card:hover {
+  border-color: rgba(30, 60, 120, 0.7) !important;
+}
+
+html.dark .og-obj-card.og-selected {
+  background: rgba(0, 50, 80, 0.6) !important;
+  border-color: rgba(0, 229, 255, 0.7) !important;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.15);
+}
+
+/* ── Conjunction Alert Cards ───────────────────────────────────────────── */
+html:not(.dark) .og-conj-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(14, 165, 233, 0.25) !important;
+}
+
+html:not(.dark) .og-conj-card:hover {
+  border-color: rgba(2, 132, 199, 0.5) !important;
+}
+
+/* ── Verdict Card ──────────────────────────────────────────────────────── */
+html:not(.dark) #collision-verdict-card {
+  background: rgba(239, 246, 255, 0.95) !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
+}
+
+html:not(.dark) #collision-verdict-card .text-cyan-300 {
+  color: #0369a1 !important;
+}
+
+/* ── Timeline & Controls ───────────────────────────────────────────────── */
+html:not(.dark) #btn-jump-next-tca {
+  background: rgba(220, 38, 38, 0.1) !important;
+  border-color: rgba(220, 38, 38, 0.35) !important;
+  color: #b91c1c !important;
+}
+
+html:not(.dark) #btn-play-pause {
+  background: #0284c7 !important;
+  color: #fff !important;
+}
+
+html:not(.dark) #btn-play-pause:hover {
+  background: #0369a1 !important;
+}
+
+/* ── Modals ────────────────────────────────────────────────────────────── */
+html:not(.dark) #conjunction-detail-modal > div > div,
+html:not(.dark) #import-tle-modal > div > div {
+  background: rgba(255, 255, 255, 0.99) !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
+}
+
+/* ── Table ─────────────────────────────────────────────────────────────── */
+html:not(.dark) #conjunction-table-body tr {
+  border-bottom-color: rgba(226, 232, 240, 0.8) !important;
+  color: #0f172a;
+}
+
+html:not(.dark) #conjunction-table-body tr:hover {
+  background: rgba(239, 246, 255, 0.7) !important;
+}
+
+/* ── Telemetry HUD panels ──────────────────────────────────────────────── */
+html:not(.dark) .og-hud-cell {
+  background: rgba(241, 245, 249, 0.9) !important;
+  border-color: rgba(203, 213, 225, 0.6) !important;
+  color: #0f172a !important;
+}
+
+html:not(.dark) .og-hud-cell .og-hud-label {
+  color: #64748b !important;
+}
+
+/* ── Theme transition helper ───────────────────────────────────────────── */
+body, header, aside, main, footer,
+.glass-panel, .glass-panel-critical, .glass-panel-high {
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+              color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* ==========================================================================
+   Light Mode Tailwind Utility Overrides
+   Forces hardcoded dark-mode utility classes to render as highly legible 
+   light-mode colors when the light theme is active.
+   ========================================================================== */
+/* Text Colors */
+html:not(.dark) .text-white { color: #0f172a !important; }
+html:not(.dark) .text-slate-100, html:not(.dark) .text-slate-200 { color: #0f172a !important; }
+html:not(.dark) .text-slate-300, html:not(.dark) .text-slate-400 { color: #334155 !important; }
+html:not(.dark) .text-slate-500 { color: #475569 !important; }
+html:not(.dark) .text-cyan-100, html:not(.dark) .text-cyan-200, html:not(.dark) .text-cyan-300, html:not(.dark) .text-cyan-400, html:not(.dark) .text-cyan-500 { color: #0284c7 !important; }
+html:not(.dark) .text-amber-400, html:not(.dark) .text-amber-300 { color: #d97706 !important; }
+html:not(.dark) .text-red-400, html:not(.dark) .text-red-300, html:not(.dark) .text-red-200 { color: #dc2626 !important; }
+
+/* Background Colors */
+html:not(.dark) .bg-slate-950, html:not(.dark) .bg-slate-950\/90, html:not(.dark) .bg-slate-950\/80, html:not(.dark) .bg-slate-950\/70, html:not(.dark) .bg-slate-950\/40 { background-color: #f4f4f5 !important; border-color: #e4e4e7 !important; }
+html:not(.dark) .bg-slate-900, html:not(.dark) .bg-slate-900\/90, html:not(.dark) .bg-slate-900\/80 { background-color: #fafafa !important; border-color: #e4e4e7 !important; }
+html:not(.dark) .bg-slate-800 { background-color: #f4f4f5 !important; border-color: #e4e4e7 !important; }
+html:not(.dark) .bg-red-950, html:not(.dark) .bg-red-950\/90, html:not(.dark) .bg-red-950\/40 { background-color: #fef2f2 !important; border-color: #fecaca !important; }
+html:not(.dark) .bg-amber-950, html:not(.dark) .bg-amber-950\/90, html:not(.dark) .bg-amber-950\/40 { background-color: #fffbeb !important; border-color: #fde68a !important; }
+html:not(.dark) .bg-cyan-950, html:not(.dark) .bg-cyan-950\/90, html:not(.dark) .bg-cyan-950\/40, html:not(.dark) .bg-cyan-600\/20, html:not(.dark) .bg-cyan-500\/10, html:not(.dark) .bg-cyan-500\/20 { background-color: #f0f9ff !important; border-color: #bae6fd !important; }
+
+/* Border Colors */
+html:not(.dark) .border-slate-800 { border-color: #e4e4e7 !important; }
+html:not(.dark) .border-slate-700 { border-color: #d4d4d8 !important; }
+
+/* Hovers */
+html:not(.dark) .hover\:bg-slate-800:hover { background-color: #e5e7eb !important; }
+html:not(.dark) .hover\:border-cyan-500:hover { border-color: #0284c7 !important; }
+
+#conjunction-alert-feed {
+  display: none !important;
+}
+
+/* ── Collapsible Floating Drawer on Left ── */
+#sidebar-catalog {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 25;
+  width: 18rem;
+  max-width: 85vw;
+  transform: translateX(0);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6);
+}
+
+#sidebar-catalog.drawer-closed {
+  transform: translateX(-100%) !important;
+}
+
+#sidebar-catalog.drawer-closed #drawer-toggle-icon {
+  transform: rotate(180deg);
+}
+
+#btn-toggle-drawer {
+  background: rgba(6, 11, 30, 0.92);
+  border-color: rgba(0, 229, 255, 0.3);
+}
+
+#btn-toggle-drawer:hover {
+  background: rgba(8, 20, 50, 1);
+  border-color: rgba(0, 229, 255, 0.6);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+}
+
+html:not(.dark) #sidebar-catalog {
+  background: rgba(243, 244, 246, 0.96) !important;
+  border-right-color: rgba(15, 23, 42, 0.15) !important;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.15);
+}
+
+html:not(.dark) #btn-toggle-drawer {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0284c7 !important;
+}
+
+/* ── Collapsible Floating Drawer on Right (Conjunction Alerts & Telemetry) ── */
+#sidebar-conjunctions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 25;
+  width: 20rem;
+  max-width: 85vw;
+  transform: translateX(0);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.6);
+}
+
+#sidebar-conjunctions.drawer-closed {
+  transform: translateX(100%) !important;
+}
+
+#sidebar-conjunctions.drawer-closed #right-drawer-toggle-icon {
+  transform: rotate(180deg);
+}
+
+#btn-toggle-right-drawer {
+  background: rgba(6, 11, 30, 0.92);
+  border-color: rgba(0, 229, 255, 0.3);
+}
+
+#btn-toggle-right-drawer:hover {
+  background: rgba(8, 20, 50, 1);
+  border-color: rgba(0, 229, 255, 0.6);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+}
+
+html:not(.dark) #sidebar-conjunctions {
+  background: rgba(243, 244, 246, 0.96) !important;
+  border-left-color: rgba(15, 23, 42, 0.15) !important;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+}
+
+html:not(.dark) #btn-toggle-right-drawer {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0284c7 !important;
+}
+
+
+
+
+
+

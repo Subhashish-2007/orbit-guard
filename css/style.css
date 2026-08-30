@@ -1,0 +1,157 @@
+/* ==========================================================================
+   ORBITGUARD - Aerospace Mission Control & Space Debris Tracking Theme
+   ========================================================================== */
+
+:root {
+    --bg-dark: #050814;
+    --bg-panel: rgba(10, 16, 38, 0.85);
+    --border-cyan: rgba(0, 240, 255, 0.2);
+    --cyan-glow: #00f0ff;
+    --emerald-glow: #00ff99;
+    --amber-glow: #ffaa00;
+    --crimson-glow: #ff2a55;
+    --purple-glow: #a855f7;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: #e2e8f0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+}
+
+#root {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#root > div {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #070c1e; }
+::-webkit-scrollbar-thumb { background: #1b2a59; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+
+/* Glassmorphism Panels */
+.glass-panel {
+    background: rgba(10, 18, 42, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border-cyan);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55);
+}
+
+.glass-panel-critical {
+    background: rgba(45, 10, 25, 0.88);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 42, 85, 0.5);
+    box-shadow: 0 0 25px rgba(255, 42, 85, 0.25);
+}
+
+.glass-panel-high {
+    background: rgba(40, 25, 10, 0.88);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 170, 0, 0.45);
+    box-shadow: 0 0 20px rgba(255, 170, 0, 0.2);
+}
+
+/* Neon Glows & Borders */
+.glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.7); }
+.glow-red { text-shadow: 0 0 12px rgba(255, 42, 85, 0.8); }
+.glow-amber { text-shadow: 0 0 10px rgba(255, 170, 0, 0.7); }
+.glow-green { text-shadow: 0 0 10px rgba(0, 255, 153, 0.7); }
+
+.border-glow-cyan { border-color: #00f0ff; box-shadow: 0 0 15px rgba(0, 240, 255, 0.25); }
+.border-glow-red { border-color: #ff2a55; box-shadow: 0 0 18px rgba(255, 42, 85, 0.4); }
+
+/* Severity Badges */
+.badge-critical {
+    background: rgba(255, 42, 85, 0.2);
+    color: #ff2a55;
+    border: 1px solid #ff2a55;
+    box-shadow: 0 0 8px rgba(255, 42, 85, 0.4);
+}
+
+.badge-high {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+    border: 1px solid #ffaa00;
+    box-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+}
+
+.badge-moderate {
+    background: rgba(0, 240, 255, 0.15);
+    color: #00f0ff;
+    border: 1px solid #00f0ff;
+}
+
+.badge-low {
+    background: rgba(0, 255, 153, 0.15);
+    color: #00ff99;
+    border: 1px solid #00ff99;
+}
+
+/* Radar & Pulse Animations */
+.radar-sweep {
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 240, 255, 0.2) 60deg, transparent 60.1deg);
+    animation: radar 3.5s linear infinite;
+}
+
+@keyframes radar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-red-alert {
+    0%, 100% { background-color: rgba(255, 42, 85, 0.2); border-color: #ff2a55; box-shadow: 0 0 15px rgba(255, 42, 85, 0.3); }
+    50% { background-color: rgba(255, 42, 85, 0.45); border-color: #ffffff; box-shadow: 0 0 25px rgba(255, 42, 85, 0.65); }
+}
+
+.alert-pulse-critical {
+    animation: pulse-red-alert 1.5s infinite ease-in-out;
+}
+
+/* Custom Sliders */
+input[type="range"] {
+    -webkit-appearance: none;
+    background: #0f1c3f;
+    border-radius: 4px;
+    height: 6px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #00f0ff;
+    box-shadow: 0 0 10px #00f0ff;
+    cursor: pointer;
+}
+
+/* Interactive Tabs */
+.tab-btn.active {
+    background: rgba(0, 240, 255, 0.18);
+    color: #00f0ff;
+    border-bottom: 2px solid #00f0ff;
+    box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2);
+}
+
+/* Canvas Viewports */
+#globe-container, #ground-track-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+canvas { display: block; }
