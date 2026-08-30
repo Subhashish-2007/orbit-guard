@@ -1,4 +1,4 @@
-# SMART INDIA HACKATHON 2026 - INTERNAL | ORBITGUARD | Space Debris Tracking & Satellite Collision Risk Prediction Dashboard 
+﻿# SMART INDIA HACKATHON 2026 - INTERNAL | ORBITGUARD | Space Debris Tracking & Satellite Collision Risk Prediction Dashboard 
 **Problem Statement PS-04 | Category: Software | Theme: Space Technology**
 
 ---
@@ -16,7 +16,6 @@
 | **Conjunction detection between object pairs with risk scoring** | Multi-tier pairwise conjunction detection engine (altitude pre-filter, coarse time-stepping, sub-second golden section search). Calculates TCA, 3D separation vector ($\Delta R, \Delta T, \Delta W$ in Hill/RSW frame), relative velocity, Foster 2D Gaussian collision probability ($P_c$), and 0-100 composite collision risk score. | 
 | **3D / 2D visualization of orbits and flagged risk events** | **3D WebGL Earth Globe (Three.js)** with procedural high-resolution textures, atmospheric glow, orbit path ribbons, glowing satellite markers, collision envelope hazard spheres, and flashing laser link lines between closing pairs.<br>**2D Ground Track View (Canvas2D)** with equirectangular continental projection, sensor footprint coverage circles ($3\text{dB}$ cones), live subsatellite icons with heading vectors, and day/night solar terminator curve. |
 | **Simple alert list for "high-risk" upcoming conjunctions** | Real-time ranked alert feed with color-coded severity badges (🔴 **CRITICAL**, 🟠 **HIGH**, 🟡 **MODERATE**, 🟢 **LOW**), live TCA countdown timers ($T-01\text{h } 28\text{m } 14\text{s}$), and full telemetry inspector modal. |
-
 
 ---
 
@@ -66,24 +65,23 @@ $$P_c = \frac{R^2}{2\sigma^2} \exp\left( -\frac{d_{\text{miss}}^2}{2\sigma^2} \r
 
 1. **Development Server (Recommended)**:
    This project uses Vite for fast local development.
-   `ash
+   ```bash
    cd orbit-guard
    npm install
    npm run dev
-   `
-   Open http://localhost:5173 in your web browser.
+   ```
+   Open `http://localhost:5173` in your web browser.
 
 2. **Production Build**:
-   `ash
+   ```bash
    npm run build
-   `
-   This will generate optimized, minified files in the dist/ directory ready for deployment.
+   ```
+   This will generate optimized, minified files in the `dist/` directory ready for deployment.
 
 3. **Standalone Static Version**:
-   - You can also run 
-ode build_standalone.js to compile everything into a single portable standalone_app.html file that can be opened directly in any browser without a web server.
+   - You can also run `node build_standalone.js` to compile everything into a single portable `standalone_app.html` file that can be opened directly in any browser without a web server.
 
 4. **Key Interactive Controls**:
-   - **Time Warp Controls (Bottom Bar)**: Play/Pause, Step $\pm 5\text{ min}$, Time Warp speeds (1x, 10x, 60x, 300x, 1000x), Jump to Next TCA.
+   - **Time Warp Controls (Bottom Bar)**: Play/Pause, Step $\pm 5\text{ min}$, Time Warp speeds (`1x`, `10x`, `60x`, `300x`, `1000x`), Jump to Next TCA.
    - **Tab Deck**: Switch between 3D Globe, 2D Ground Track, Conjunction Matrix, TLE Manager, and Risk Analytics.
    - **Inspect Conjunctions**: Click any alert or table row to inspect telemetry and review closest approach details.
